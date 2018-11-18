@@ -25,11 +25,13 @@ class RequestHandler(BaseHTTPRequestHandler):
         else:
             self.send_header('Content-type', 'text/html')
         self.end_headers()
-        with open(filename, 'rb') as fh:
-            html = fh.read()
-            # html = bytes(html, 'utf8')
-            self.wfile.write(html)
-
+        try:
+            with open(filename, 'rb') as fh:
+                html = fh.read()
+                # html = bytes(html, 'utf8')
+                self.wfile.write(html)
+        except IOError:
+            pass
     def do_POST(self):
         print(self.headers)
         length = int(self.headers['content-length'])
@@ -42,7 +44,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(bytes(page_content, 'utf-8'))
 
 
-httpd = HTTPServer(('localhost', 443), RequestHandler)
+httpd = HTTPServer(('localhost', 8080), RequestHandler)
 
 httpd.socket = ssl.wrap_socket (httpd.socket,
         keyfile="privkeyA.pem",
